@@ -4,7 +4,7 @@ Tags: gallery, image, media, block editor, lightbox
 Requires at least: 6.6
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 0.2.0
+Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,15 @@ Existing gallery content is preserved. The plugin writes standard WordPress bloc
 New-block defaults do not replace later editor choices. The administration tool updates only unlinked Galleries by default; its explicit All Galleries scope overwrites existing choices.
 
 == Changelog ==
+
+= 1.0.0 =
+
+* Renamed the plugin to Gallery Images Link Updater.
+* Choose Media File, Attachment Page, or None for newly populated Galleries.
+* Optionally link new standalone Image blocks to Media File.
+* Update only unlinked Galleries or deliberately overwrite all Gallery link choices.
+* Added Spanish (Spain) translation.
+* Retained dry-run, backup, rollback, and cleanup tools.
 
 = 0.1.0 =
 

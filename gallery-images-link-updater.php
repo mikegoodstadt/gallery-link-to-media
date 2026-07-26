@@ -3,7 +3,7 @@
  * Plugin Name:       Gallery Images Link Updater
  * Plugin URI:        https://github.com/mikegoodstadt/gallery-images-link-updater
  * Description:       Sets and updates link destinations for native WordPress Gallery blocks and their images.
- * Version:           0.2.0
+ * Version:           1.0.0
  * Requires at least: 6.6
  * Requires PHP:      7.4
  * Author:            Mike Goodstadt
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'GLTM_VERSION', '0.2.0' );
+define( 'GLTM_VERSION', '1.0.0' );
 define( 'GLTM_PLUGIN_FILE', __FILE__ );
 define( 'GLTM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GLTM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

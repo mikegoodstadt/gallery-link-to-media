@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the Gallery Images Link Updater package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Gallery Images Link Updater 0.2.0\n"
+"Project-Id-Version: Gallery Images Link Updater 1.0.0\n"
 "Report-Msgid-Bugs-To: https://github.com/mikegoodstadt/gallery-images-link-updater/issues\n"
 "POT-Creation-Date: 2026-07-26 16:05+0200\n"
 "PO-Revision-Date: 2026-07-26 16:15+0200\n"

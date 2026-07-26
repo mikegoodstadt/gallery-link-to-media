@@ -6,7 +6,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Gallery Images Link Updater 0.2.0\n"
+"Project-Id-Version: Gallery Images Link Updater 1.0.0\n"
 "Report-Msgid-Bugs-To: https://github.com/mikegoodstadt/gallery-images-link-"
 "updater/issues\n"
 "POT-Creation-Date: 2026-07-26 16:05+0200\n"

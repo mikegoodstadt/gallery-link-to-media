@@ -29,9 +29,9 @@ wp-content/plugins/gallery-images-link-updater
 3. Create and push a version tag, for example:
 
 ```bash
-git tag v0.2.0
+git tag v1.0.0
 git push origin main
-git push origin v0.2.0
+git push origin v1.0.0
 ```
 
 The GitHub Actions workflow builds `gallery-images-link-updater.zip` and attaches it to the GitHub release.
