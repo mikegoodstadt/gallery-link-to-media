@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build and release zip
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build plugin zip
+        run: |
+          PLUGIN_SLUG="gallery-link-to-media"
+          ZIP_NAME="${PLUGIN_SLUG}.zip"
+          VERSION="${GITHUB_REF_NAME#v}"
+
+          sed -i "s/^ \\* Version: .*/ * Version:           ${VERSION}/" gallery-link-to-media.php
+          sed -i "s/^Stable tag: .*/Stable tag: ${VERSION}/" readme.txt
+
+          mkdir -p "/tmp/${PLUGIN_SLUG}"
+          rsync -a \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.gitignore' \
+            --exclude='.DS_Store' \
+            --exclude='.vscode' \
+            --exclude='.idea' \
+            --exclude='node_modules' \
+            --exclude='vendor' \
+            --exclude='dist' \
+            --exclude='build' \
+            --exclude='coverage' \
+            --exclude='*.log' \
+            --exclude='*.tmp' \
+            --exclude='*.cache' \
+            ./ "/tmp/${PLUGIN_SLUG}/"
+
+          cd /tmp
+          zip -r "${ZIP_NAME}" "${PLUGIN_SLUG}/"
+          echo "ZIP_PATH=/tmp/${ZIP_NAME}" >> "$GITHUB_ENV"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.ZIP_PATH }}
+          name: ${{ github.ref_name }}
+          generate_release_notes: true
