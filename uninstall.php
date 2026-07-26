@@ -1,6 +1,6 @@
 <?php
 /**
- * Uninstall Gallery Link to Media.
+ * Uninstall Gallery Images Link Updater.
  *
  * Native Gallery and Image block content is intentionally preserved.
  *

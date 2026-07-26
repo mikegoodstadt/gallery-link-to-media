@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Changed
+
+- Renamed the plugin to Gallery Images Link Updater.
+- Renamed the plugin slug, text domain, main file, release archive, and repository references to `gallery-images-link-updater`.
+
 ## [0.1.0] - 2026-07-26
 
 ### Added

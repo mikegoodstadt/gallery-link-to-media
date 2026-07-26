@@ -172,7 +172,7 @@
 
 	hooks.addFilter(
 		'editor.BlockEdit',
-		'gallery-link-to-media/default-new-gallery',
+		'gallery-images-link-updater/default-new-gallery',
 		withGalleryMediaDefault
 	);
 
@@ -228,7 +228,7 @@
 
 	hooks.addFilter(
 		'blocks.switchToBlockType.transformedBlock',
-		'gallery-link-to-media/image-to-gallery',
+		'gallery-images-link-updater/image-to-gallery',
 		setTransformedGalleryToMedia
 	);
 } )(

@@ -20,10 +20,10 @@ const GLTM_NONCE_ACTION     = 'gltm_manage_galleries';
  */
 function gltm_admin_menu() {
 	add_management_page(
-		__( 'Gallery Link to Media', 'gallery-link-to-media' ),
-		__( 'Gallery Link to Media', 'gallery-link-to-media' ),
+		__( 'Gallery Images Link Updater', 'gallery-images-link-updater' ),
+		__( 'Gallery Images Link Updater', 'gallery-images-link-updater' ),
 		'manage_options',
-		'gallery-link-to-media',
+		'gallery-images-link-updater',
 		'gltm_render_admin_page'
 	);
 }
@@ -40,8 +40,8 @@ function gltm_plugin_action_links( $links ) {
 		$links,
 		sprintf(
 			'<a href="%s">%s</a>',
-			esc_url( admin_url( 'tools.php?page=gallery-link-to-media' ) ),
-			esc_html__( 'Scan Galleries', 'gallery-link-to-media' )
+			esc_url( admin_url( 'tools.php?page=gallery-images-link-updater' ) ),
+			esc_html__( 'Scan Galleries', 'gallery-images-link-updater' )
 		)
 	);
 
@@ -86,8 +86,8 @@ function gltm_render_admin_page() {
 	}
 	?>
 	<div class="wrap">
-		<h1><?php esc_html_e( 'Gallery Link to Media', 'gallery-link-to-media' ); ?></h1>
-		<p><?php esc_html_e( 'Find native Gallery blocks without an explicit link choice and link their images directly to their media files.', 'gallery-link-to-media' ); ?></p>
+		<h1><?php esc_html_e( 'Gallery Images Link Updater', 'gallery-images-link-updater' ); ?></h1>
+		<p><?php esc_html_e( 'Find native Gallery blocks without an explicit link choice and link their images directly to their media files.', 'gallery-images-link-updater' ); ?></p>
 
 		<?php if ( $result ) : ?>
 			<div class="notice <?php echo empty( $result['errors'] ) ? 'notice-success' : 'notice-warning'; ?>">
@@ -109,16 +109,16 @@ function gltm_render_admin_page() {
 			<?php endif; ?>
 
 			<?php if ( $result['items'] ) : ?>
-				<h2><?php esc_html_e( 'Posts', 'gallery-link-to-media' ); ?></h2>
+				<h2><?php esc_html_e( 'Posts', 'gallery-images-link-updater' ); ?></h2>
 				<table class="widefat striped" style="max-width:1200px;">
 					<thead>
 						<tr>
-							<th><?php esc_html_e( 'ID', 'gallery-link-to-media' ); ?></th>
-							<th><?php esc_html_e( 'Title', 'gallery-link-to-media' ); ?></th>
-							<th><?php esc_html_e( 'Post type', 'gallery-link-to-media' ); ?></th>
-							<th><?php esc_html_e( 'Galleries', 'gallery-link-to-media' ); ?></th>
-							<th><?php esc_html_e( 'Images', 'gallery-link-to-media' ); ?></th>
-							<th><?php esc_html_e( 'Status', 'gallery-link-to-media' ); ?></th>
+							<th><?php esc_html_e( 'ID', 'gallery-images-link-updater' ); ?></th>
+							<th><?php esc_html_e( 'Title', 'gallery-images-link-updater' ); ?></th>
+							<th><?php esc_html_e( 'Post type', 'gallery-images-link-updater' ); ?></th>
+							<th><?php esc_html_e( 'Galleries', 'gallery-images-link-updater' ); ?></th>
+							<th><?php esc_html_e( 'Images', 'gallery-images-link-updater' ); ?></th>
+							<th><?php esc_html_e( 'Status', 'gallery-images-link-updater' ); ?></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -137,7 +137,7 @@ function gltm_render_admin_page() {
 			<?php endif; ?>
 
 			<?php if ( $result['errors'] ) : ?>
-				<h2><?php esc_html_e( 'Warnings', 'gallery-link-to-media' ); ?></h2>
+				<h2><?php esc_html_e( 'Warnings', 'gallery-images-link-updater' ); ?></h2>
 				<ul>
 					<?php foreach ( $result['errors'] as $error ) : ?>
 						<li><?php echo esc_html( $error ); ?></li>
@@ -149,7 +149,7 @@ function gltm_render_admin_page() {
 		<form method="post" style="max-width:960px;">
 			<?php wp_nonce_field( GLTM_NONCE_ACTION ); ?>
 
-			<h2><?php esc_html_e( 'Post types', 'gallery-link-to-media' ); ?></h2>
+			<h2><?php esc_html_e( 'Post types', 'gallery-images-link-updater' ); ?></h2>
 			<fieldset>
 				<?php foreach ( gltm_get_available_post_types() as $type => $label ) : ?>
 					<label style="display:block;margin:0 0 8px;">
@@ -159,25 +159,25 @@ function gltm_render_admin_page() {
 				<?php endforeach; ?>
 			</fieldset>
 
-			<h2><?php esc_html_e( 'Scope', 'gallery-link-to-media' ); ?></h2>
+			<h2><?php esc_html_e( 'Scope', 'gallery-images-link-updater' ); ?></h2>
 			<p>
-				<label for="gltm_post_id"><strong><?php esc_html_e( 'Single post ID', 'gallery-link-to-media' ); ?></strong></label><br>
+				<label for="gltm_post_id"><strong><?php esc_html_e( 'Single post ID', 'gallery-images-link-updater' ); ?></strong></label><br>
 				<input class="regular-text" id="gltm_post_id" min="1" name="gltm_post_id" step="1" type="number" value="<?php echo $post_id ? esc_attr( $post_id ) : ''; ?>">
 			</p>
-			<p class="description"><?php esc_html_e( 'Leave blank to scan all selected post types. A post ID overrides the post-type selection.', 'gallery-link-to-media' ); ?></p>
+			<p class="description"><?php esc_html_e( 'Leave blank to scan all selected post types. A post ID overrides the post-type selection.', 'gallery-images-link-updater' ); ?></p>
 
 			<p>
-				<button class="button button-secondary" name="gltm_action" type="submit" value="dry_run"><?php esc_html_e( 'Dry Run', 'gallery-link-to-media' ); ?></button>
-				<button class="button button-primary" name="gltm_action" type="submit" value="convert"><?php esc_html_e( 'Convert Galleries', 'gallery-link-to-media' ); ?></button>
-				<button class="button button-secondary" name="gltm_action" type="submit" value="rollback"><?php esc_html_e( 'Rollback Converted Posts', 'gallery-link-to-media' ); ?></button>
-				<button class="button button-secondary" name="gltm_action" type="submit" value="cleanup"><?php esc_html_e( 'Delete Conversion Backups', 'gallery-link-to-media' ); ?></button>
+				<button class="button button-secondary" name="gltm_action" type="submit" value="dry_run"><?php esc_html_e( 'Dry Run', 'gallery-images-link-updater' ); ?></button>
+				<button class="button button-primary" name="gltm_action" type="submit" value="convert"><?php esc_html_e( 'Convert Galleries', 'gallery-images-link-updater' ); ?></button>
+				<button class="button button-secondary" name="gltm_action" type="submit" value="rollback"><?php esc_html_e( 'Rollback Converted Posts', 'gallery-images-link-updater' ); ?></button>
+				<button class="button button-secondary" name="gltm_action" type="submit" value="cleanup"><?php esc_html_e( 'Delete Conversion Backups', 'gallery-images-link-updater' ); ?></button>
 			</p>
 		</form>
 
 		<div class="card" style="max-width:960px;">
-			<h2><?php esc_html_e( 'Conversion policy', 'gallery-link-to-media' ); ?></h2>
-			<p><?php esc_html_e( 'Gallery blocks whose Gallery-level link destination is unset or None are converted. Explicit Attachment Page, Media File, and Enlarge on Click choices are preserved.', 'gallery-link-to-media' ); ?></p>
-			<p><?php esc_html_e( 'Run a dry run and back up the database before converting. Each changed post also receives a one-time content backup for rollback.', 'gallery-link-to-media' ); ?></p>
+			<h2><?php esc_html_e( 'Conversion policy', 'gallery-images-link-updater' ); ?></h2>
+			<p><?php esc_html_e( 'Gallery blocks whose Gallery-level link destination is unset or None are converted. Explicit Attachment Page, Media File, and Enlarge on Click choices are preserved.', 'gallery-images-link-updater' ); ?></p>
+			<p><?php esc_html_e( 'Run a dry run and back up the database before converting. Each changed post also receives a one-time content backup for rollback.', 'gallery-images-link-updater' ); ?></p>
 		</div>
 	</div>
 	<?php
@@ -248,8 +248,8 @@ function gltm_process_posts( $post_types, $apply, $post_id = 0 ) {
 	$ids    = gltm_get_candidate_post_ids( $post_types, $post_id );
 
 	$result['title'] = $apply
-		? __( 'Conversion complete', 'gallery-link-to-media' )
-		: __( 'Dry run complete', 'gallery-link-to-media' );
+		? __( 'Conversion complete', 'gallery-images-link-updater' )
+		: __( 'Dry run complete', 'gallery-images-link-updater' );
 
 	foreach ( $ids as $id ) {
 		$post = get_post( $id );
@@ -262,7 +262,7 @@ function gltm_process_posts( $post_types, $apply, $post_id = 0 ) {
 			continue;
 		}
 
-		$status = __( 'Would convert', 'gallery-link-to-media' );
+		$status = __( 'Would convert', 'gallery-images-link-updater' );
 
 		if ( $apply && $conversion['changed'] ) {
 			if ( ! metadata_exists( 'post', $id, GLTM_BACKUP_META ) ) {
@@ -272,7 +272,7 @@ function gltm_process_posts( $post_types, $apply, $post_id = 0 ) {
 
 			if ( post_type_supports( $post->post_type, 'revisions' ) ) {
 				wp_save_post_revision( $id );
-				++$result['stats'][ __( 'Revisions saved', 'gallery-link-to-media' ) ];
+				++$result['stats'][ __( 'Revisions saved', 'gallery-images-link-updater' ) ];
 			}
 
 			$updated = wp_update_post(
@@ -286,15 +286,15 @@ function gltm_process_posts( $post_types, $apply, $post_id = 0 ) {
 			);
 
 			if ( is_wp_error( $updated ) ) {
-				$status             = __( 'Error', 'gallery-link-to-media' );
+				$status             = __( 'Error', 'gallery-images-link-updater' );
 				$result['errors'][] = sprintf(
 					/* translators: 1: post ID, 2: error message. */
-					__( 'Post %1$d could not be updated: %2$s', 'gallery-link-to-media' ),
+					__( 'Post %1$d could not be updated: %2$s', 'gallery-images-link-updater' ),
 					$id,
 					$updated->get_error_message()
 				);
 			} else {
-				$status = __( 'Converted', 'gallery-link-to-media' );
+				$status = __( 'Converted', 'gallery-images-link-updater' );
 				update_post_meta( $id, GLTM_CONVERTED_META, current_time( 'mysql' ) );
 				update_post_meta(
 					$id,
@@ -304,7 +304,7 @@ function gltm_process_posts( $post_types, $apply, $post_id = 0 ) {
 						'images'    => $conversion['images'],
 					)
 				);
-				++$result['stats'][ __( 'Posts converted', 'gallery-link-to-media' ) ];
+				++$result['stats'][ __( 'Posts converted', 'gallery-images-link-updater' ) ];
 			}
 		}
 
@@ -316,15 +316,15 @@ function gltm_process_posts( $post_types, $apply, $post_id = 0 ) {
 			'images'     => $conversion['images'],
 			'status'     => $status,
 		);
-		$result['stats'][ __( 'Posts matched', 'gallery-link-to-media' ) ]++;
-		$result['stats'][ __( 'Galleries matched', 'gallery-link-to-media' ) ] += $conversion['galleries'];
-		$result['stats'][ __( 'Images matched', 'gallery-link-to-media' ) ] += $conversion['images'];
+		$result['stats'][ __( 'Posts matched', 'gallery-images-link-updater' ) ]++;
+		$result['stats'][ __( 'Galleries matched', 'gallery-images-link-updater' ) ] += $conversion['galleries'];
+		$result['stats'][ __( 'Images matched', 'gallery-images-link-updater' ) ] += $conversion['images'];
 		$result['errors'] = array_merge( $result['errors'], $conversion['errors'] );
 	}
 
 	$result['message'] = $apply
-		? __( 'Eligible galleries were linked to their media files.', 'gallery-link-to-media' )
-		: __( 'No post content was changed.', 'gallery-link-to-media' );
+		? __( 'Eligible galleries were linked to their media files.', 'gallery-images-link-updater' )
+		: __( 'No post content was changed.', 'gallery-images-link-updater' );
 
 	return $result;
 }
@@ -339,11 +339,11 @@ function gltm_empty_result() {
 		'title'   => '',
 		'message' => '',
 		'stats'   => array(
-			__( 'Posts matched', 'gallery-link-to-media' )     => 0,
-			__( 'Galleries matched', 'gallery-link-to-media' ) => 0,
-			__( 'Images matched', 'gallery-link-to-media' )    => 0,
-			__( 'Posts converted', 'gallery-link-to-media' )   => 0,
-			__( 'Revisions saved', 'gallery-link-to-media' )   => 0,
+			__( 'Posts matched', 'gallery-images-link-updater' )     => 0,
+			__( 'Galleries matched', 'gallery-images-link-updater' ) => 0,
+			__( 'Images matched', 'gallery-images-link-updater' )    => 0,
+			__( 'Posts converted', 'gallery-images-link-updater' )   => 0,
+			__( 'Revisions saved', 'gallery-images-link-updater' )   => 0,
 		),
 		'items'   => array(),
 		'errors'  => array(),
@@ -427,7 +427,7 @@ function gltm_convert_image_block( &$block, &$errors ) {
 	if ( ! $media_url ) {
 		$errors[] = sprintf(
 			/* translators: %d: attachment ID. */
-			__( 'An Image block with attachment ID %d has no media URL and was skipped.', 'gallery-link-to-media' ),
+			__( 'An Image block with attachment ID %d has no media URL and was skipped.', 'gallery-images-link-updater' ),
 			$attachment_id
 		);
 		return false;
@@ -526,7 +526,7 @@ function gltm_rollback_posts( $post_types, $post_id = 0 ) {
 	$result = gltm_empty_result();
 	$ids    = gltm_get_managed_post_ids( $post_types, $post_id );
 
-	$result['title'] = __( 'Rollback complete', 'gallery-link-to-media' );
+	$result['title'] = __( 'Rollback complete', 'gallery-images-link-updater' );
 
 	foreach ( $ids as $id ) {
 		$backup = get_post_meta( $id, GLTM_BACKUP_META, true );
@@ -547,17 +547,17 @@ function gltm_rollback_posts( $post_types, $post_id = 0 ) {
 		if ( is_wp_error( $updated ) ) {
 			$result['errors'][] = sprintf(
 				/* translators: 1: post ID, 2: error message. */
-				__( 'Post %1$d could not be restored: %2$s', 'gallery-link-to-media' ),
+				__( 'Post %1$d could not be restored: %2$s', 'gallery-images-link-updater' ),
 				$id,
 				$updated->get_error_message()
 			);
 		} else {
-			$result['items'][] = gltm_result_item( $id, __( 'Restored', 'gallery-link-to-media' ) );
+			$result['items'][] = gltm_result_item( $id, __( 'Restored', 'gallery-images-link-updater' ) );
 		}
 	}
 
-	$result['stats']   = array( __( 'Posts restored', 'gallery-link-to-media' ) => count( $result['items'] ) );
-	$result['message'] = __( 'Original post content was restored where a conversion backup was available.', 'gallery-link-to-media' );
+	$result['stats']   = array( __( 'Posts restored', 'gallery-images-link-updater' ) => count( $result['items'] ) );
+	$result['message'] = __( 'Original post content was restored where a conversion backup was available.', 'gallery-images-link-updater' );
 
 	return $result;
 }
@@ -578,12 +578,12 @@ function gltm_cleanup_posts( $post_types, $post_id = 0 ) {
 		delete_post_meta( $id, GLTM_BACKUP_DATE_META );
 		delete_post_meta( $id, GLTM_CONVERTED_META );
 		delete_post_meta( $id, GLTM_REPORT_META );
-		$result['items'][] = gltm_result_item( $id, __( 'Backups deleted', 'gallery-link-to-media' ) );
+		$result['items'][] = gltm_result_item( $id, __( 'Backups deleted', 'gallery-images-link-updater' ) );
 	}
 
-	$result['title']   = __( 'Cleanup complete', 'gallery-link-to-media' );
-	$result['message'] = __( 'Plugin backup and report metadata was deleted. Post content was not changed.', 'gallery-link-to-media' );
-	$result['stats']   = array( __( 'Posts cleaned', 'gallery-link-to-media' ) => count( $ids ) );
+	$result['title']   = __( 'Cleanup complete', 'gallery-images-link-updater' );
+	$result['message'] = __( 'Plugin backup and report metadata was deleted. Post content was not changed.', 'gallery-images-link-updater' );
+	$result['stats']   = array( __( 'Posts cleaned', 'gallery-images-link-updater' ) => count( $ids ) );
 
 	return $result;
 }

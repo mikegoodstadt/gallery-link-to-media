@@ -18,12 +18,12 @@ jobs:
 
       - name: Build plugin zip
         run: |
-          PLUGIN_SLUG="gallery-link-to-media"
+          PLUGIN_SLUG="gallery-images-link-updater"
           ZIP_NAME="${PLUGIN_SLUG}.zip"
           VERSION="${GITHUB_REF_NAME#v}"
 
-          sed -i "s/^ \\* Version: .*/ * Version:           ${VERSION}/" gallery-link-to-media.php
-          sed -i "s/define( 'GLTM_VERSION', '[^']*' );/define( 'GLTM_VERSION', '${VERSION}' );/" gallery-link-to-media.php
+          sed -i "s/^ \\* Version: .*/ * Version:           ${VERSION}/" gallery-images-link-updater.php
+          sed -i "s/define( 'GLTM_VERSION', '[^']*' );/define( 'GLTM_VERSION', '${VERSION}' );/" gallery-images-link-updater.php
           sed -i "s/^Stable tag: .*/Stable tag: ${VERSION}/" readme.txt
 
           mkdir -p "/tmp/${PLUGIN_SLUG}"
