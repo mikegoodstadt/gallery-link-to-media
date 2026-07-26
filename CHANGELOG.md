@@ -14,3 +14,5 @@ All notable changes to this project will be documented in this file.
 - Media-file links for Image-to-Gallery block transformations.
 - Recursive dry-run and conversion tools for existing native Gallery blocks.
 - One-time content backups, revision capture, rollback, and backup cleanup.
+- Atomic Gallery and Image updates for a coherent editor undo history.
+- Tag-based release packaging with synchronized plugin versions.

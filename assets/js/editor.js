@@ -44,27 +44,25 @@
 	 */
 	function setGalleryImagesToMedia( clientId, images ) {
 		var editorDispatch = data.dispatch( 'core/block-editor' );
-		var childIds = [];
-		var childUpdates = {};
+		var blockIds = [ clientId ];
+		var blockUpdates = {};
+
+		blockUpdates[ clientId ] = {
+			linkTo: MEDIA_DESTINATION
+		};
 
 		images.forEach( function ( image ) {
-			childIds.push( image.clientId );
-			childUpdates[ image.clientId ] = getMediaLinkAttributes(
+			blockIds.push( image.clientId );
+			blockUpdates[ image.clientId ] = getMediaLinkAttributes(
 				image.attributes
 			);
 		} );
 
-		editorDispatch.updateBlockAttributes( clientId, {
-			linkTo: MEDIA_DESTINATION
-		} );
-
-		if ( childIds.length ) {
-			editorDispatch.updateBlockAttributes(
-				childIds,
-				childUpdates,
-				{ uniqueByBlock: true }
-			);
-		}
+		editorDispatch.updateBlockAttributes(
+			blockIds,
+			blockUpdates,
+			{ uniqueByBlock: true }
+		);
 	}
 
 	/**
