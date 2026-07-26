@@ -1,64 +1,72 @@
 /**
- * Apply media-file links to newly populated native Gallery blocks.
+ * Apply configured link destinations to newly populated native blocks.
  *
  * The saved content remains entirely native WordPress block markup. This script
  * runs only in the block editor and does not provide frontend behavior.
  */
-( function ( blocks, blockEditor, compose, data, element, hooks ) {
+( function ( compose, data, element, hooks, settings ) {
 	'use strict';
 
 	var GALLERY_BLOCK = 'core/gallery';
 	var IMAGE_BLOCK = 'core/image';
-	var MEDIA_DESTINATION = 'media';
+	var galleryDestination = settings.galleryDestination || 'media';
+	var linkStandaloneImages = settings.linkStandaloneImages === true;
 
 	/**
-	 * Return media-link attributes for an Image block.
+	 * Return link attributes for an Image block.
 	 *
-	 * @param {Object} attributes Image block attributes.
+	 * @param {Object} attributes  Image block attributes.
+	 * @param {string} destination Link destination.
 	 * @return {Object} Attributes to merge into the Image block.
 	 */
-	function getMediaLinkAttributes( attributes ) {
+	function getImageLinkAttributes( attributes, destination ) {
 		var attachment =
 			attributes.id &&
 			data.select( 'core' ).getMedia( attributes.id );
-		var url =
-			( attachment && attachment.source_url ) ||
-			attributes.fullUrl ||
-			attributes.url;
-		var updates = {
-			linkDestination: MEDIA_DESTINATION
-		};
+		var href;
 
-		if ( url ) {
-			updates.href = url;
+		if ( destination === 'media' ) {
+			href =
+				( attachment && attachment.source_url ) ||
+				attributes.fullUrl ||
+				attributes.url;
+		} else if ( destination === 'attachment' ) {
+			href =
+				( attachment && attachment.link ) ||
+				attributes.href;
 		}
 
-		return updates;
+		return {
+			href: href,
+			lightbox: undefined,
+			linkDestination: destination
+		};
 	}
 
 	/**
-	 * Apply a Gallery-wide media-link choice to its current Image children.
+	 * Apply the configured link choice to a Gallery and its Image children.
 	 *
-	 * @param {string} clientId Gallery client ID.
-	 * @param {Array}  images   Nested Image blocks.
+	 * @param {string} clientId   Gallery client ID.
+	 * @param {Array}  images     Nested Image blocks.
+	 * @param {string} destination Link destination.
 	 */
-	function setGalleryImagesToMedia( clientId, images ) {
-		var editorDispatch = data.dispatch( 'core/block-editor' );
+	function setGalleryDestination( clientId, images, destination ) {
 		var blockIds = [ clientId ];
 		var blockUpdates = {};
 
 		blockUpdates[ clientId ] = {
-			linkTo: MEDIA_DESTINATION
+			linkTo: destination
 		};
 
 		images.forEach( function ( image ) {
 			blockIds.push( image.clientId );
-			blockUpdates[ image.clientId ] = getMediaLinkAttributes(
-				image.attributes
+			blockUpdates[ image.clientId ] = getImageLinkAttributes(
+				image.attributes,
+				destination
 			);
 		} );
 
-		editorDispatch.updateBlockAttributes(
+		data.dispatch( 'core/block-editor' ).updateBlockAttributes(
 			blockIds,
 			blockUpdates,
 			{ uniqueByBlock: true }
@@ -66,127 +74,230 @@
 	}
 
 	/**
-	 * Watch an individual Gallery for its first Image children.
+	 * Watch a Gallery for its first Image children.
 	 *
-	 * Existing populated galleries are deliberately ignored here; the migration
-	 * tool handles them explicitly. Once an editor chooses any Gallery link
-	 * destination, this initializer also stays out of the way.
+	 * Existing populated galleries are ignored; the administration tool handles
+	 * them explicitly. WordPress writes `none` while first populating a Gallery,
+	 * so the initializer remembers that the Gallery began empty and unset.
 	 */
-	var withGalleryMediaDefault = compose.createHigherOrderComponent(
-		function ( BlockEdit ) {
-			function GalleryMediaDefaultControl( props ) {
-				var previousImageCount = element.useRef( null );
-				var startedEmptyWithoutLink = element.useRef( null );
-				var galleryState = data.useSelect(
-					function ( select ) {
-						var editorSelect = select( 'core/block-editor' );
-						var gallery = editorSelect.getBlock( props.clientId );
+	function GalleryDefaultControl( props ) {
+		var previousImageCount = element.useRef( null );
+		var startedEmptyWithoutLink = element.useRef( null );
+		var galleryState = data.useSelect(
+			function ( select ) {
+				var editorSelect = select( 'core/block-editor' );
+				var gallery = editorSelect.getBlock( props.clientId );
 
-						return {
-							innerImages: gallery
-								? gallery.innerBlocks.filter(
-										function ( block ) {
-											return block.name === IMAGE_BLOCK;
-										}
-								  )
-								: [],
-							wasJustInserted:
-								editorSelect.wasBlockJustInserted(
-									props.clientId,
-									'inserter_menu'
-								)
-						};
-					},
-					[ props.clientId ]
-				);
-				var innerImages = galleryState.innerImages;
+				return {
+					innerImages: gallery
+						? gallery.innerBlocks.filter( function ( block ) {
+								return block.name === IMAGE_BLOCK;
+						  } )
+						: [],
+					wasJustInserted: editorSelect.wasBlockJustInserted(
+						props.clientId,
+						'inserter_menu'
+					)
+				};
+			},
+			[ props.clientId ]
+		);
+		var innerImages = galleryState.innerImages;
 
-				if ( startedEmptyWithoutLink.current === null ) {
-					startedEmptyWithoutLink.current =
-						innerImages.length === 0 &&
-						! props.attributes.linkTo;
+		if ( startedEmptyWithoutLink.current === null ) {
+			startedEmptyWithoutLink.current =
+				innerImages.length === 0 &&
+				! props.attributes.linkTo;
+		}
+
+		element.useEffect(
+			function () {
+				if ( previousImageCount.current === null ) {
+					previousImageCount.current = innerImages.length;
+
+					if (
+						innerImages.length > 0 &&
+						galleryState.wasJustInserted &&
+						( ! props.attributes.linkTo ||
+							props.attributes.linkTo === 'none' )
+					) {
+						setGalleryDestination(
+							props.clientId,
+							innerImages,
+							galleryDestination
+						);
+						startedEmptyWithoutLink.current = false;
+					}
+
+					return;
 				}
 
-				element.useEffect(
-					function () {
-						if ( previousImageCount.current === null ) {
-							previousImageCount.current = innerImages.length;
+				var gainedFirstImages =
+					previousImageCount.current === 0 &&
+					innerImages.length > 0;
 
-							if (
-								innerImages.length > 0 &&
-								galleryState.wasJustInserted &&
-								( ! props.attributes.linkTo ||
-									props.attributes.linkTo === 'none' )
-							) {
-								setGalleryImagesToMedia(
-									props.clientId,
-									innerImages
-								);
-								startedEmptyWithoutLink.current = false;
-							}
+				previousImageCount.current = innerImages.length;
 
-							return;
-						}
-
-						var gainedFirstImages =
-							previousImageCount.current === 0 &&
-							innerImages.length > 0;
-
-						previousImageCount.current = innerImages.length;
-
-						if (
-							gainedFirstImages &&
-							startedEmptyWithoutLink.current
-						) {
-							setGalleryImagesToMedia(
-								props.clientId,
-								innerImages
-							);
-							startedEmptyWithoutLink.current = false;
-						}
-					},
-					[
+				if (
+					gainedFirstImages &&
+					startedEmptyWithoutLink.current
+				) {
+					setGalleryDestination(
+						props.clientId,
 						innerImages,
-						galleryState.wasJustInserted,
-						props.attributes.linkTo,
-						props.clientId
-					]
-				);
+						galleryDestination
+					);
+					startedEmptyWithoutLink.current = false;
+				}
+			},
+			[
+				innerImages,
+				galleryState.wasJustInserted,
+				props.attributes.linkTo,
+				props.clientId
+			]
+		);
 
-				return element.createElement( BlockEdit, props );
-			}
+		return element.createElement( props.BlockEdit, props );
+	}
 
-			return function GalleryMediaDefault( props ) {
-				if ( props.name !== GALLERY_BLOCK ) {
-					return element.createElement( BlockEdit, props );
+	/**
+	 * Watch a standalone Image for its first selected attachment.
+	 */
+	function StandaloneImageDefaultControl( props ) {
+		var previousHasImage = element.useRef( null );
+		var startedWithoutImage = element.useRef( null );
+		var imageState = data.useSelect(
+			function ( select ) {
+				var editorSelect = select( 'core/block-editor' );
+
+				return {
+					isInGallery:
+						editorSelect.getBlockParentsByBlockName(
+							props.clientId,
+							GALLERY_BLOCK
+						).length > 0,
+					wasJustInserted: editorSelect.wasBlockJustInserted(
+						props.clientId,
+						'inserter_menu'
+					)
+				};
+			},
+			[ props.clientId ]
+		);
+		var hasImage = Boolean(
+			props.attributes.id || props.attributes.url
+		);
+
+		if ( startedWithoutImage.current === null ) {
+			startedWithoutImage.current = ! hasImage;
+		}
+
+		element.useEffect(
+			function () {
+				if ( imageState.isInGallery ) {
+					return;
 				}
 
-				return element.createElement(
-					GalleryMediaDefaultControl,
+				if ( previousHasImage.current === null ) {
+					previousHasImage.current = hasImage;
+
+					if (
+						hasImage &&
+						imageState.wasJustInserted &&
+						( ! props.attributes.linkDestination ||
+							props.attributes.linkDestination === 'none' )
+					) {
+						data.dispatch(
+							'core/block-editor'
+						).updateBlockAttributes(
+							props.clientId,
+							getImageLinkAttributes(
+								props.attributes,
+								'media'
+							)
+						);
+						startedWithoutImage.current = false;
+					}
+
+					return;
+				}
+
+				var gainedImage =
+					! previousHasImage.current && hasImage;
+
+				previousHasImage.current = hasImage;
+
+				if ( gainedImage && startedWithoutImage.current ) {
+					data.dispatch(
+						'core/block-editor'
+					).updateBlockAttributes(
+						props.clientId,
+						getImageLinkAttributes(
+							props.attributes,
+							'media'
+						)
+					);
+					startedWithoutImage.current = false;
+				}
+			},
+			[
+				hasImage,
+				imageState.isInGallery,
+				imageState.wasJustInserted,
+				props.attributes,
+				props.clientId
+			]
+		);
+
+		return element.createElement( props.BlockEdit, props );
+	}
+
+	var withLinkDefaults = compose.createHigherOrderComponent(
+		function ( BlockEdit ) {
+			return function LinkDefaults( props ) {
+				var controlProps = Object.assign(
+					{ BlockEdit: BlockEdit },
 					props
 				);
+
+				if ( props.name === GALLERY_BLOCK ) {
+					return element.createElement(
+						GalleryDefaultControl,
+						controlProps
+					);
+				}
+
+				if (
+					props.name === IMAGE_BLOCK &&
+					linkStandaloneImages
+				) {
+					return element.createElement(
+						StandaloneImageDefaultControl,
+						controlProps
+					);
+				}
+
+				return element.createElement( BlockEdit, props );
 			};
 		},
-		'withGalleryMediaDefault'
+		'withLinkDefaults'
 	);
 
 	hooks.addFilter(
 		'editor.BlockEdit',
-		'gallery-images-link-updater/default-new-gallery',
-		withGalleryMediaDefault
+		'gallery-images-link-updater/default-links',
+		withLinkDefaults
 	);
 
 	/**
 	 * Normalize an Image-to-Gallery transformation.
 	 *
-	 * This is separate from the first-image watcher because transformed Gallery
-	 * blocks can be mounted with their Image children already present.
-	 *
 	 * @param {Object|Array} transformedBlock Result of the core transform.
 	 * @param {Array}        originalBlocks   Blocks supplied to the transform.
 	 * @return {Object|Array} Filtered transform result.
 	 */
-	function setTransformedGalleryToMedia(
+	function setTransformedGalleryDestination(
 		transformedBlock,
 		originalBlocks
 	) {
@@ -204,7 +315,7 @@
 		transformedBlock.attributes = Object.assign(
 			{},
 			transformedBlock.attributes,
-			{ linkTo: MEDIA_DESTINATION }
+			{ linkTo: galleryDestination }
 		);
 
 		transformedBlock.innerBlocks = transformedBlock.innerBlocks.map(
@@ -216,7 +327,10 @@
 				image.attributes = Object.assign(
 					{},
 					image.attributes,
-					getMediaLinkAttributes( image.attributes )
+					getImageLinkAttributes(
+						image.attributes,
+						galleryDestination
+					)
 				);
 
 				return image;
@@ -229,13 +343,12 @@
 	hooks.addFilter(
 		'blocks.switchToBlockType.transformedBlock',
 		'gallery-images-link-updater/image-to-gallery',
-		setTransformedGalleryToMedia
+		setTransformedGalleryDestination
 	);
 } )(
-	window.wp.blocks,
-	window.wp.blockEditor,
 	window.wp.compose,
 	window.wp.data,
 	window.wp.element,
-	window.wp.hooks
+	window.wp.hooks,
+	window.giluEditorSettings || {}
 );

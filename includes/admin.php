@@ -60,6 +60,10 @@ function gltm_render_admin_page() {
 	$result     = null;
 	$post_types = gltm_get_default_post_types();
 	$post_id    = 0;
+	$gallery_default = gltm_get_gallery_default_destination();
+	$link_standalone = (bool) get_option( 'gltm_link_standalone_images', false );
+	$target           = 'media';
+	$update_scope     = 'unlinked';
 
 	if ( isset( $_POST['gltm_action'] ) ) {
 		check_admin_referer( GLTM_NONCE_ACTION );
@@ -73,11 +77,34 @@ function gltm_render_admin_page() {
 		$post_id    = isset( $_POST['gltm_post_id'] )
 			? absint( wp_unslash( $_POST['gltm_post_id'] ) )
 			: 0;
+		$target     = gltm_sanitize_destination(
+			isset( $_POST['gltm_target'] )
+				? wp_unslash( $_POST['gltm_target'] )
+				: 'media'
+		);
+		$update_scope = isset( $_POST['gltm_update_scope'] ) && 'all' === sanitize_key( wp_unslash( $_POST['gltm_update_scope'] ) )
+			? 'all'
+			: 'unlinked';
 
-		if ( 'dry_run' === $action ) {
-			$result = gltm_process_posts( $post_types, false, $post_id );
+		if ( 'save_settings' === $action ) {
+			$gallery_default = gltm_sanitize_destination(
+				isset( $_POST['gltm_gallery_default'] )
+					? wp_unslash( $_POST['gltm_gallery_default'] )
+					: 'media'
+			);
+			$link_standalone = ! empty( $_POST['gltm_link_standalone'] );
+
+			update_option( 'gltm_gallery_default_destination', $gallery_default );
+			update_option( 'gltm_link_standalone_images', $link_standalone );
+
+			$result            = gltm_empty_result();
+			$result['title']   = __( 'Settings saved', 'gallery-images-link-updater' );
+			$result['message'] = __( 'New blocks will use the updated link defaults after the editor is reloaded.', 'gallery-images-link-updater' );
+			$result['stats']   = array();
+		} elseif ( 'dry_run' === $action ) {
+			$result = gltm_process_posts( $post_types, false, $post_id, $target, $update_scope );
 		} elseif ( 'convert' === $action ) {
-			$result = gltm_process_posts( $post_types, true, $post_id );
+			$result = gltm_process_posts( $post_types, true, $post_id, $target, $update_scope );
 		} elseif ( 'rollback' === $action ) {
 			$result = gltm_rollback_posts( $post_types, $post_id );
 		} elseif ( 'cleanup' === $action ) {
@@ -87,7 +114,7 @@ function gltm_render_admin_page() {
 	?>
 	<div class="wrap">
 		<h1><?php esc_html_e( 'Gallery Images Link Updater', 'gallery-images-link-updater' ); ?></h1>
-		<p><?php esc_html_e( 'Find native Gallery blocks without an explicit link choice and link their images directly to their media files.', 'gallery-images-link-updater' ); ?></p>
+		<p><?php esc_html_e( 'Set defaults for new Gallery and Image blocks, or update link destinations in existing native Galleries.', 'gallery-images-link-updater' ); ?></p>
 
 		<?php if ( $result ) : ?>
 			<div class="notice <?php echo empty( $result['errors'] ) ? 'notice-success' : 'notice-warning'; ?>">
@@ -149,6 +176,45 @@ function gltm_render_admin_page() {
 		<form method="post" style="max-width:960px;">
 			<?php wp_nonce_field( GLTM_NONCE_ACTION ); ?>
 
+			<h2><?php esc_html_e( 'Defaults for new blocks', 'gallery-images-link-updater' ); ?></h2>
+			<p>
+				<label for="gltm_gallery_default"><strong><?php esc_html_e( 'New Gallery link destination', 'gallery-images-link-updater' ); ?></strong></label><br>
+				<select id="gltm_gallery_default" name="gltm_gallery_default">
+					<?php foreach ( gltm_get_destination_labels() as $value => $label ) : ?>
+						<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $gallery_default, $value ); ?>><?php echo esc_html( $label ); ?></option>
+					<?php endforeach; ?>
+				</select>
+			</p>
+			<p>
+				<label>
+					<input type="checkbox" name="gltm_link_standalone" value="1" <?php checked( $link_standalone ); ?>>
+					<?php esc_html_e( 'Link newly inserted standalone Image blocks to their media files', 'gallery-images-link-updater' ); ?>
+				</label>
+			</p>
+			<p class="description"><?php esc_html_e( 'Standalone Image automation is optional and does not affect Images nested inside Galleries.', 'gallery-images-link-updater' ); ?></p>
+			<p>
+				<button class="button button-primary" name="gltm_action" type="submit" value="save_settings"><?php esc_html_e( 'Save Settings', 'gallery-images-link-updater' ); ?></button>
+			</p>
+
+			<hr>
+
+			<h2><?php esc_html_e( 'Update existing Galleries', 'gallery-images-link-updater' ); ?></h2>
+			<p>
+				<label for="gltm_target"><strong><?php esc_html_e( 'Target link destination', 'gallery-images-link-updater' ); ?></strong></label><br>
+				<select id="gltm_target" name="gltm_target">
+					<?php foreach ( gltm_get_destination_labels() as $value => $label ) : ?>
+						<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $target, $value ); ?>><?php echo esc_html( $label ); ?></option>
+					<?php endforeach; ?>
+				</select>
+			</p>
+			<p>
+				<label for="gltm_update_scope"><strong><?php esc_html_e( 'Galleries to update', 'gallery-images-link-updater' ); ?></strong></label><br>
+				<select id="gltm_update_scope" name="gltm_update_scope">
+					<option value="unlinked" <?php selected( $update_scope, 'unlinked' ); ?>><?php esc_html_e( 'Only unset or unlinked Galleries', 'gallery-images-link-updater' ); ?></option>
+					<option value="all" <?php selected( $update_scope, 'all' ); ?>><?php esc_html_e( 'All Galleries (overwrite existing choices)', 'gallery-images-link-updater' ); ?></option>
+				</select>
+			</p>
+
 			<h2><?php esc_html_e( 'Post types', 'gallery-images-link-updater' ); ?></h2>
 			<fieldset>
 				<?php foreach ( gltm_get_available_post_types() as $type => $label ) : ?>
@@ -176,11 +242,24 @@ function gltm_render_admin_page() {
 
 		<div class="card" style="max-width:960px;">
 			<h2><?php esc_html_e( 'Conversion policy', 'gallery-images-link-updater' ); ?></h2>
-			<p><?php esc_html_e( 'Gallery blocks whose Gallery-level link destination is unset or None are converted. Explicit Attachment Page, Media File, and Enlarge on Click choices are preserved.', 'gallery-images-link-updater' ); ?></p>
+			<p><?php esc_html_e( 'The safer scope updates only Galleries whose destination is unset or None. The All Galleries scope deliberately replaces existing Gallery and Image link choices.', 'gallery-images-link-updater' ); ?></p>
 			<p><?php esc_html_e( 'Run a dry run and back up the database before converting. Each changed post also receives a one-time content backup for rollback.', 'gallery-images-link-updater' ); ?></p>
 		</div>
 	</div>
 	<?php
+}
+
+/**
+ * Return translated destination labels.
+ *
+ * @return array
+ */
+function gltm_get_destination_labels() {
+	return array(
+		'media'      => __( 'Media File', 'gallery-images-link-updater' ),
+		'attachment' => __( 'Attachment Page', 'gallery-images-link-updater' ),
+		'none'       => __( 'None', 'gallery-images-link-updater' ),
+	);
 }
 
 /**
@@ -241,11 +320,15 @@ function gltm_sanitize_post_types( $post_types ) {
  * @param array $post_types Types to scan.
  * @param bool  $apply      Whether to save changes.
  * @param int   $post_id    Optional single post.
+ * @param string $target    Target destination.
+ * @param string $scope     Either unlinked or all.
  * @return array
  */
-function gltm_process_posts( $post_types, $apply, $post_id = 0 ) {
+function gltm_process_posts( $post_types, $apply, $post_id = 0, $target = 'media', $scope = 'unlinked' ) {
 	$result = gltm_empty_result();
 	$ids    = gltm_get_candidate_post_ids( $post_types, $post_id );
+	$target = gltm_sanitize_destination( $target );
+	$scope  = 'all' === $scope ? 'all' : 'unlinked';
 
 	$result['title'] = $apply
 		? __( 'Conversion complete', 'gallery-images-link-updater' )
@@ -257,7 +340,7 @@ function gltm_process_posts( $post_types, $apply, $post_id = 0 ) {
 			continue;
 		}
 
-		$conversion = gltm_convert_content( $post->post_content );
+		$conversion = gltm_convert_content( $post->post_content, $target, $scope );
 		if ( ! $conversion['galleries'] ) {
 			continue;
 		}
@@ -323,7 +406,11 @@ function gltm_process_posts( $post_types, $apply, $post_id = 0 ) {
 	}
 
 	$result['message'] = $apply
-		? __( 'Eligible galleries were linked to their media files.', 'gallery-images-link-updater' )
+		? sprintf(
+			/* translators: %s: link destination label. */
+			__( 'Eligible Galleries were updated to: %s.', 'gallery-images-link-updater' ),
+			gltm_get_destination_labels()[ $target ]
+		)
 		: __( 'No post content was changed.', 'gallery-images-link-updater' );
 
 	return $result;
@@ -354,9 +441,11 @@ function gltm_empty_result() {
  * Convert eligible Gallery blocks in content.
  *
  * @param string $content Post content.
+ * @param string $target  Target destination.
+ * @param string $scope   Either unlinked or all.
  * @return array
  */
-function gltm_convert_content( $content ) {
+function gltm_convert_content( $content, $target = 'media', $scope = 'unlinked' ) {
 	$result = array(
 		'content'   => $content,
 		'changed'   => false,
@@ -364,7 +453,12 @@ function gltm_convert_content( $content ) {
 		'images'    => 0,
 		'errors'    => array(),
 	);
-	$blocks = gltm_convert_blocks( parse_blocks( $content ), $result );
+	$blocks = gltm_convert_blocks(
+		parse_blocks( $content ),
+		$result,
+		gltm_sanitize_destination( $target ),
+		'all' === $scope ? 'all' : 'unlinked'
+	);
 
 	if ( $result['changed'] ) {
 		$result['content'] = serialize_blocks( $blocks );
@@ -377,31 +471,37 @@ function gltm_convert_content( $content ) {
  * Convert parsed blocks recursively.
  *
  * @param array $blocks Parsed blocks.
- * @param array $result Conversion result by reference.
+ * @param array  $result Conversion result by reference.
+ * @param string $target Target destination.
+ * @param string $scope  Either unlinked or all.
  * @return array
  */
-function gltm_convert_blocks( $blocks, &$result ) {
+function gltm_convert_blocks( $blocks, &$result, $target, $scope ) {
 	foreach ( $blocks as &$block ) {
 		$link_to = isset( $block['attrs']['linkTo'] ) ? $block['attrs']['linkTo'] : '';
+		$eligible = 'all' === $scope || '' === $link_to || 'none' === $link_to;
 
-		if ( 'core/gallery' === $block['blockName'] && ( '' === $link_to || 'none' === $link_to ) ) {
+		if ( 'core/gallery' === $block['blockName'] && $eligible ) {
 			$converted_images = 0;
 
 			foreach ( $block['innerBlocks'] as &$image ) {
-				if ( gltm_convert_image_block( $image, $result['errors'] ) ) {
+				if ( gltm_convert_image_block( $image, $result['errors'], $target ) ) {
 					++$converted_images;
 				}
 			}
 			unset( $image );
 
 			if ( $converted_images ) {
-				$block['attrs']['linkTo'] = 'media';
+				$block['attrs']['linkTo'] = $target;
+				if ( 'none' === $target ) {
+					unset( $block['attrs']['linkTarget'] );
+				}
 				++$result['galleries'];
 				$result['images'] += $converted_images;
 				$result['changed'] = true;
 			}
 		} elseif ( ! empty( $block['innerBlocks'] ) ) {
-			$block['innerBlocks'] = gltm_convert_blocks( $block['innerBlocks'], $result );
+			$block['innerBlocks'] = gltm_convert_blocks( $block['innerBlocks'], $result, $target, $scope );
 		}
 	}
 	unset( $block );
@@ -413,32 +513,45 @@ function gltm_convert_blocks( $blocks, &$result ) {
  * Link an Image block to its full attachment URL.
  *
  * @param array $block  Parsed Image block by reference.
- * @param array $errors Warning list by reference.
+ * @param array  $errors Warning list by reference.
+ * @param string $target Target destination.
  * @return bool
  */
-function gltm_convert_image_block( &$block, &$errors ) {
+function gltm_convert_image_block( &$block, &$errors, $target ) {
 	if ( 'core/image' !== $block['blockName'] ) {
 		return false;
 	}
 
 	$attachment_id = isset( $block['attrs']['id'] ) ? absint( $block['attrs']['id'] ) : 0;
-	$media_url     = $attachment_id ? wp_get_attachment_url( $attachment_id ) : '';
+	$link_url      = '';
 
-	if ( ! $media_url ) {
+	if ( 'media' === $target ) {
+		$link_url = $attachment_id ? wp_get_attachment_url( $attachment_id ) : '';
+	} elseif ( 'attachment' === $target ) {
+		$link_url = $attachment_id ? get_attachment_link( $attachment_id ) : '';
+	}
+
+	if ( 'none' !== $target && ! $link_url ) {
 		$errors[] = sprintf(
 			/* translators: %d: attachment ID. */
-			__( 'An Image block with attachment ID %d has no media URL and was skipped.', 'gallery-images-link-updater' ),
+			__( 'An Image block with attachment ID %d has no valid destination URL and was skipped.', 'gallery-images-link-updater' ),
 			$attachment_id
 		);
 		return false;
 	}
 
-	$block['attrs']['linkDestination'] = 'media';
-	$block['innerHTML']                = gltm_link_image_markup( $block['innerHTML'], $media_url );
+	$block['attrs']['linkDestination'] = $target;
+	unset( $block['attrs']['lightbox'] );
+
+	if ( 'none' === $target ) {
+		unset( $block['attrs']['linkTarget'] );
+	}
+
+	$block['innerHTML'] = gltm_update_image_markup( $block['innerHTML'], $target, $link_url );
 
 	foreach ( $block['innerContent'] as &$fragment ) {
 		if ( is_string( $fragment ) ) {
-			$fragment = gltm_link_image_markup( $fragment, $media_url );
+			$fragment = gltm_update_image_markup( $fragment, $target, $link_url );
 		}
 	}
 	unset( $fragment );
@@ -449,15 +562,25 @@ function gltm_convert_image_block( &$block, &$errors ) {
 /**
  * Add or update the anchor surrounding an Image block's image.
  *
- * @param string $markup    Image block markup.
- * @param string $media_url Full attachment URL.
+ * @param string $markup   Image block markup.
+ * @param string $target   Target destination.
+ * @param string $link_url Target URL.
  * @return string
  */
-function gltm_link_image_markup( $markup, $media_url ) {
+function gltm_update_image_markup( $markup, $target, $link_url ) {
+	if ( 'none' === $target ) {
+		return (string) preg_replace(
+			'/<a\b[^>]*>\s*(<picture\b.*?<\/picture>|<img\b[^>]*>)\s*<\/a>/is',
+			'$1',
+			$markup,
+			1
+		);
+	}
+
 	if ( preg_match( '/<a\b[^>]*>\s*<(?:picture|img)\b/i', $markup ) ) {
 		return (string) preg_replace(
 			'/(<a\b[^>]*\bhref=)(["\']).*?\2/i',
-			'$1$2' . esc_url( $media_url ) . '$2',
+			'$1$2' . esc_url( $link_url ) . '$2',
 			$markup,
 			1
 		);
@@ -465,7 +588,7 @@ function gltm_link_image_markup( $markup, $media_url ) {
 
 	return (string) preg_replace(
 		'/(<picture\b.*?<\/picture>|<img\b[^>]*>)/is',
-		'<a href="' . esc_url( $media_url ) . '">$1</a>',
+		'<a href="' . esc_url( $link_url ) . '">$1</a>',
 		$markup,
 		1
 	);

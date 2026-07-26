@@ -1,15 +1,17 @@
 # Gallery Images Link Updater
 
-Gallery Images Link Updater makes images in native WordPress Gallery blocks link to their media files by default.
+Gallery Images Link Updater sets link defaults for native WordPress Gallery blocks and can optionally link new standalone Image blocks to their media files.
 
 The plugin stores standard `core/gallery` and `core/image` attributes and markup. It has no frontend runtime dependency and does not include a lightbox.
 
 ## Scope
 
-- Apply media-file links when images are first added to a Gallery with no explicit link choice.
-- Preserve existing Media File, Attachment Page, and Enlarge on Click choices.
-- Handle Image-to-Gallery transformations.
-- Scan, dry-run, convert, back up, roll back, and clean up existing Gallery blocks from **Tools → Gallery Images Link Updater**.
+- Choose Media File, Attachment Page, or None for newly populated Galleries.
+- Optionally link new standalone Image blocks to Media File.
+- Handle Image-to-Gallery transformations using the configured Gallery default.
+- Update only unlinked Galleries or deliberately overwrite all Galleries with a selected destination.
+- Dry-run, update, back up, roll back, and clean up existing Gallery blocks from **Tools → Gallery Images Link Updater**.
+- Use the bundled Spanish (Spain) interface translation.
 - Package installable release ZIP files from version tags.
 
 ## Development

@@ -16,11 +16,13 @@ Gallery Images Link Updater helps editors who use lightboxes or otherwise need n
 
 The plugin is designed to:
 
-* Apply Media File links when images are first added to a new native Gallery block.
-* Preserve explicit editor choices such as Attachment Page or Enlarge on Click.
+* Apply Media File, Attachment Page, or None when images are first added to a new native Gallery block.
+* Optionally link newly inserted standalone Image blocks to their media files.
 * Handle Image-to-Gallery block transformations.
+* Update unlinked or all existing Gallery blocks to a selected destination.
 * Scan and update existing Gallery blocks with dry-run, backup, rollback, and cleanup tools.
 * Store only standard WordPress `core/gallery` and `core/image` content, so galleries continue working after deactivation or uninstall.
+* Provide a bundled Spanish (Spain) translation.
 
 It does not include a lightbox and adds no frontend JavaScript.
 
@@ -28,8 +30,8 @@ It does not include a lightbox and adds no frontend JavaScript.
 
 1. Upload the `gallery-images-link-updater` folder to `/wp-content/plugins/`, or install the plugin through the WordPress Plugins screen.
 2. Activate Gallery Images Link Updater.
-3. Add images to a native Gallery block. New galleries without an explicit link choice will use Media File links.
-4. To review existing content, use the migration tool under Tools.
+3. Open **Tools -> Gallery Images Link Updater** to configure defaults.
+4. Use the dry run before updating existing content.
 
 == Frequently Asked Questions ==
 
@@ -39,7 +41,7 @@ No. It produces standard media-file links that can be used by a theme or lightbo
 
 = Does it affect standalone Image blocks? =
 
-No. Automatic defaults apply only to Image blocks inside a native WordPress Gallery block.
+Only when the optional standalone Image setting is enabled. Existing standalone Images are not changed automatically.
 
 = What happens if I deactivate or uninstall it? =
 
@@ -47,7 +49,7 @@ Existing gallery content is preserved. The plugin writes standard WordPress bloc
 
 = Will it override a link option selected by an editor? =
 
-No. Once a Gallery uses Media File, Attachment Page, or Enlarge on Click, the plugin leaves that choice alone. WordPress automatically writes None when images are first added; the plugin replaces that initial unlinked state with Media File.
+New-block defaults do not replace later editor choices. The administration tool updates only unlinked Galleries by default; its explicit All Galleries scope overwrites existing choices.
 
 == Changelog ==
 

@@ -27,6 +27,44 @@ define( 'GLTM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 require_once GLTM_PLUGIN_DIR . 'includes/admin.php';
 
 /**
+ * Load bundled translations.
+ */
+function gltm_load_textdomain() {
+	load_plugin_textdomain(
+		'gallery-images-link-updater',
+		false,
+		dirname( plugin_basename( GLTM_PLUGIN_FILE ) ) . '/languages'
+	);
+}
+add_action( 'init', 'gltm_load_textdomain' );
+
+/**
+ * Return a supported link destination.
+ *
+ * @param mixed  $value    Candidate value.
+ * @param string $fallback Value used when the candidate is invalid.
+ * @return string
+ */
+function gltm_sanitize_destination( $value, $fallback = 'media' ) {
+	$value = is_string( $value ) ? sanitize_key( $value ) : '';
+
+	return in_array( $value, array( 'media', 'attachment', 'none' ), true )
+		? $value
+		: $fallback;
+}
+
+/**
+ * Return the configured destination for new Gallery blocks.
+ *
+ * @return string
+ */
+function gltm_get_gallery_default_destination() {
+	return gltm_sanitize_destination(
+		get_option( 'gltm_gallery_default_destination', 'media' )
+	);
+}
+
+/**
  * Load the Gallery editor behavior.
  */
 function gltm_enqueue_block_editor_assets() {
@@ -46,6 +84,15 @@ function gltm_enqueue_block_editor_assets() {
 		),
 		file_exists( $asset_path ) ? (string) filemtime( $asset_path ) : GLTM_VERSION,
 		true
+	);
+
+	wp_localize_script(
+		'gltm-editor',
+		'giluEditorSettings',
+		array(
+			'galleryDestination'   => gltm_get_gallery_default_destination(),
+			'linkStandaloneImages' => (bool) get_option( 'gltm_link_standalone_images', false ),
+		)
 	);
 }
 add_action( 'enqueue_block_editor_assets', 'gltm_enqueue_block_editor_assets' );

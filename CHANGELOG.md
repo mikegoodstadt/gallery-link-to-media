@@ -8,6 +8,14 @@ All notable changes to this project will be documented in this file.
 
 - Renamed the plugin to Gallery Images Link Updater.
 - Renamed the plugin slug, text domain, main file, release archive, and repository references to `gallery-images-link-updater`.
+- Expanded the existing-Gallery updater with Media File, Attachment Page, and None targets.
+- Added a safe unlinked-only scope and an explicit all-Galleries overwrite scope.
+
+### Added
+
+- Configurable link destination for newly populated Gallery blocks.
+- Optional Media File links for newly inserted standalone Image blocks.
+- Spanish (Spain) translation and translation template.
 
 ## [0.1.0] - 2026-07-26
 

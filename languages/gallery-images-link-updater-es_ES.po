@@ -1,0 +1,204 @@
+# Spanish (Spain) translations for Gallery Images Link Updater.
+# Copyright (C) 2026 Mike Goodstadt
+# This file is distributed under the same license as the Gallery Images Link Updater package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Gallery Images Link Updater 0.2.0\n"
+"Report-Msgid-Bugs-To: https://github.com/mikegoodstadt/gallery-images-link-updater/issues\n"
+"POT-Creation-Date: 2026-07-26 16:05+0200\n"
+"PO-Revision-Date: 2026-07-26 16:15+0200\n"
+"Last-Translator: Mike Goodstadt\n"
+"Language-Team: Spanish\n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Gallery Images Link Updater"
+msgstr "Actualizador de enlaces de imágenes de galería"
+
+msgid "Scan Galleries"
+msgstr "Analizar galerías"
+
+msgid "Settings saved"
+msgstr "Ajustes guardados"
+
+msgid "New blocks will use the updated link defaults after the editor is reloaded."
+msgstr "Los bloques nuevos usarán los ajustes de enlace actualizados después de recargar el editor."
+
+msgid "Set defaults for new Gallery and Image blocks, or update link destinations in existing native Galleries."
+msgstr "Define los valores predeterminados para los bloques Galería e Imagen nuevos o actualiza los destinos de enlace de las galerías nativas existentes."
+
+msgid "Posts"
+msgstr "Entradas"
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Title"
+msgstr "Título"
+
+msgid "Post type"
+msgstr "Tipo de contenido"
+
+msgid "Galleries"
+msgstr "Galerías"
+
+msgid "Images"
+msgstr "Imágenes"
+
+msgid "Status"
+msgstr "Estado"
+
+msgid "Warnings"
+msgstr "Advertencias"
+
+msgid "Defaults for new blocks"
+msgstr "Valores predeterminados para bloques nuevos"
+
+msgid "New Gallery link destination"
+msgstr "Destino de enlace de las galerías nuevas"
+
+msgid "Link newly inserted standalone Image blocks to their media files"
+msgstr "Enlazar los bloques Imagen independientes nuevos con sus archivos de medios"
+
+msgid "Standalone Image automation is optional and does not affect Images nested inside Galleries."
+msgstr "La automatización de imágenes independientes es opcional y no afecta a las imágenes incluidas en galerías."
+
+msgid "Save Settings"
+msgstr "Guardar ajustes"
+
+msgid "Update existing Galleries"
+msgstr "Actualizar galerías existentes"
+
+msgid "Target link destination"
+msgstr "Destino de enlace"
+
+msgid "Galleries to update"
+msgstr "Galerías que se actualizarán"
+
+msgid "Only unset or unlinked Galleries"
+msgstr "Solo galerías sin destino o sin enlace"
+
+msgid "All Galleries (overwrite existing choices)"
+msgstr "Todas las galerías (sobrescribir las opciones existentes)"
+
+msgid "Post types"
+msgstr "Tipos de contenido"
+
+msgid "Scope"
+msgstr "Ámbito"
+
+msgid "Single post ID"
+msgstr "ID de una entrada"
+
+msgid "Leave blank to scan all selected post types. A post ID overrides the post-type selection."
+msgstr "Déjalo en blanco para analizar todos los tipos de contenido seleccionados. Un ID de entrada sustituye la selección de tipos de contenido."
+
+msgid "Dry Run"
+msgstr "Simulación"
+
+msgid "Convert Galleries"
+msgstr "Actualizar galerías"
+
+msgid "Rollback Converted Posts"
+msgstr "Revertir entradas actualizadas"
+
+msgid "Delete Conversion Backups"
+msgstr "Eliminar copias de seguridad"
+
+msgid "Conversion policy"
+msgstr "Política de actualización"
+
+msgid "The safer scope updates only Galleries whose destination is unset or None. The All Galleries scope deliberately replaces existing Gallery and Image link choices."
+msgstr "El ámbito más seguro actualiza únicamente las galerías cuyo destino no está definido o es Ninguno. El ámbito Todas las galerías sustituye deliberadamente las opciones de enlace existentes de galerías e imágenes."
+
+msgid "Run a dry run and back up the database before converting. Each changed post also receives a one-time content backup for rollback."
+msgstr "Ejecuta una simulación y haz una copia de seguridad de la base de datos antes de actualizar. Cada entrada modificada también recibe una copia única de su contenido para poder revertirla."
+
+msgid "Media File"
+msgstr "Archivo de medios"
+
+msgid "Attachment Page"
+msgstr "Página de adjuntos"
+
+msgid "None"
+msgstr "Ninguno"
+
+msgid "Conversion complete"
+msgstr "Actualización completada"
+
+msgid "Dry run complete"
+msgstr "Simulación completada"
+
+msgid "Would convert"
+msgstr "Se actualizaría"
+
+msgid "Revisions saved"
+msgstr "Revisiones guardadas"
+
+msgid "Error"
+msgstr "Error"
+
+#. translators: 1: post ID, 2: error message.
+#, php-format
+msgid "Post %1$d could not be updated: %2$s"
+msgstr "No se pudo actualizar la entrada %1$d: %2$s"
+
+msgid "Converted"
+msgstr "Actualizada"
+
+msgid "Posts converted"
+msgstr "Entradas actualizadas"
+
+msgid "Posts matched"
+msgstr "Entradas encontradas"
+
+msgid "Galleries matched"
+msgstr "Galerías encontradas"
+
+msgid "Images matched"
+msgstr "Imágenes encontradas"
+
+#. translators: %s: link destination label.
+#, php-format
+msgid "Eligible Galleries were updated to: %s."
+msgstr "Las galerías aptas se actualizaron a: %s."
+
+msgid "No post content was changed."
+msgstr "No se modificó el contenido de ninguna entrada."
+
+#. translators: %d: attachment ID.
+#, php-format
+msgid "An Image block with attachment ID %d has no valid destination URL and was skipped."
+msgstr "Un bloque Imagen con el ID de adjunto %d no tiene una URL de destino válida y se omitió."
+
+msgid "Rollback complete"
+msgstr "Reversión completada"
+
+#. translators: 1: post ID, 2: error message.
+#, php-format
+msgid "Post %1$d could not be restored: %2$s"
+msgstr "No se pudo restaurar la entrada %1$d: %2$s"
+
+msgid "Restored"
+msgstr "Restaurada"
+
+msgid "Posts restored"
+msgstr "Entradas restauradas"
+
+msgid "Original post content was restored where a conversion backup was available."
+msgstr "Se restauró el contenido original de las entradas que disponían de una copia de seguridad."
+
+msgid "Backups deleted"
+msgstr "Copias de seguridad eliminadas"
+
+msgid "Cleanup complete"
+msgstr "Limpieza completada"
+
+msgid "Plugin backup and report metadata was deleted. Post content was not changed."
+msgstr "Se eliminaron los metadatos de copias de seguridad e informes del plugin. No se modificó el contenido de las entradas."
+
+msgid "Posts cleaned"
+msgstr "Entradas limpiadas"
