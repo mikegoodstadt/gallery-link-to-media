@@ -24,3 +24,26 @@ define( 'GLTM_PLUGIN_FILE', __FILE__ );
 define( 'GLTM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GLTM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
+/**
+ * Load the Gallery editor behavior.
+ */
+function gltm_enqueue_block_editor_assets() {
+	$asset_path = GLTM_PLUGIN_DIR . 'assets/js/editor.js';
+
+	wp_enqueue_script(
+		'gltm-editor',
+		GLTM_PLUGIN_URL . 'assets/js/editor.js',
+		array(
+			'wp-block-editor',
+			'wp-blocks',
+			'wp-compose',
+			'wp-core-data',
+			'wp-data',
+			'wp-element',
+			'wp-hooks',
+		),
+		file_exists( $asset_path ) ? (string) filemtime( $asset_path ) : GLTM_VERSION,
+		true
+	);
+}
+add_action( 'enqueue_block_editor_assets', 'gltm_enqueue_block_editor_assets' );

@@ -4,7 +4,7 @@ Gallery Link to Media makes images in native WordPress Gallery blocks link to th
 
 The plugin stores standard `core/gallery` and `core/image` attributes and markup. It has no frontend runtime dependency and does not include a lightbox.
 
-## Planned scope
+## Scope
 
 - Apply media-file links when images are first added to a Gallery with no explicit link choice.
 - Preserve explicit Gallery link choices.
@@ -37,4 +37,3 @@ The GitHub Actions workflow builds `gallery-link-to-media.zip` and attaches it t
 ## License
 
 GPL-2.0-or-later.
-
