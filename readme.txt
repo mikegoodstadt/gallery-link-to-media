@@ -53,4 +53,7 @@ No. Once a Gallery uses Media File, Attachment Page, or Enlarge on Click, the pl
 
 = 0.1.0 =
 
-* Initial development release.
+* Set native Gallery block images to Media File when a new Gallery is populated.
+* Handle Image-to-Gallery block transformations.
+* Add dry-run, conversion, backup, rollback, and cleanup tools for existing galleries.
+* Preserve explicit Media File, Attachment Page, and Enlarge on Click choices.

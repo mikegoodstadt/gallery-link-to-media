@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [0.1.0] - 2026-07-26
 
 ### Added
 
@@ -17,3 +17,12 @@ All notable changes to this project will be documented in this file.
 - Atomic Gallery and Image updates for a coherent editor undo history.
 - Tag-based release packaging with synchronized plugin versions.
 - Detection of WordPress's automatic `none` link state when a Gallery is populated.
+
+### Verified
+
+- New empty Gallery populated from the Media Library.
+- Images subsequently added to an existing Gallery.
+- Image-to-Gallery block transformation.
+- Preservation of explicit Gallery link choices.
+- Existing-gallery dry run, conversion, rollback, and cleanup.
+- Frontend compatibility with a LightGallery lightbox.
