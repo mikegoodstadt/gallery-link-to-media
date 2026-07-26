@@ -76,37 +76,47 @@
 	 */
 	var withGalleryMediaDefault = compose.createHigherOrderComponent(
 		function ( BlockEdit ) {
-			return function GalleryMediaDefault( props ) {
+			function GalleryMediaDefaultControl( props ) {
 				var previousImageCount = element.useRef( null );
-				var innerImages = data.useSelect(
+				var galleryState = data.useSelect(
 					function ( select ) {
-						if ( props.name !== GALLERY_BLOCK ) {
-							return [];
-						}
+						var editorSelect = select( 'core/block-editor' );
+						var gallery = editorSelect.getBlock( props.clientId );
 
-						var gallery = select( 'core/block-editor' ).getBlock(
-							props.clientId
-						);
-
-						if ( ! gallery ) {
-							return [];
-						}
-
-						return gallery.innerBlocks.filter( function ( block ) {
-							return block.name === IMAGE_BLOCK;
-						} );
+						return {
+							innerImages: gallery
+								? gallery.innerBlocks.filter(
+										function ( block ) {
+											return block.name === IMAGE_BLOCK;
+										}
+								  )
+								: [],
+							wasJustInserted:
+								editorSelect.wasBlockJustInserted(
+									props.clientId
+								)
+						};
 					},
-					[ props.clientId, props.name ]
+					[ props.clientId ]
 				);
+				var innerImages = galleryState.innerImages;
 
 				element.useEffect(
 					function () {
-						if ( props.name !== GALLERY_BLOCK ) {
-							return;
-						}
-
 						if ( previousImageCount.current === null ) {
 							previousImageCount.current = innerImages.length;
+
+							if (
+								innerImages.length > 0 &&
+								galleryState.wasJustInserted &&
+								! props.attributes.linkTo
+							) {
+								setGalleryImagesToMedia(
+									props.clientId,
+									innerImages
+								);
+							}
+
 							return;
 						}
 
@@ -128,13 +138,24 @@
 					},
 					[
 						innerImages,
+						galleryState.wasJustInserted,
 						props.attributes.linkTo,
-						props.clientId,
-						props.name
+						props.clientId
 					]
 				);
 
 				return element.createElement( BlockEdit, props );
+			}
+
+			return function GalleryMediaDefault( props ) {
+				if ( props.name !== GALLERY_BLOCK ) {
+					return element.createElement( BlockEdit, props );
+				}
+
+				return element.createElement(
+					GalleryMediaDefaultControl,
+					props
+				);
 			};
 		},
 		'withGalleryMediaDefault'
