@@ -17,6 +17,11 @@ All notable changes to this project will be documented in this file.
 - Optional Media File links for newly inserted standalone Image blocks.
 - Spanish (Spain) translation and translation template.
 
+### Fixed
+
+- Normalize the localized standalone-Image setting because WordPress passes localized scalar values to JavaScript as strings.
+- Preserve standalone Image initialization state when WordPress remounts the Image editor after media selection.
+
 ## [0.1.0] - 2026-07-26
 
 ### Added

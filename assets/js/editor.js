@@ -10,7 +10,11 @@
 	var GALLERY_BLOCK = 'core/gallery';
 	var IMAGE_BLOCK = 'core/image';
 	var galleryDestination = settings.galleryDestination || 'media';
-	var linkStandaloneImages = settings.linkStandaloneImages === true;
+	var linkStandaloneImages =
+		settings.linkStandaloneImages === true ||
+		settings.linkStandaloneImages === 1 ||
+		settings.linkStandaloneImages === '1';
+	var standaloneCandidates = {};
 
 	/**
 	 * Return link attributes for an Image block.
@@ -165,8 +169,6 @@
 	 * Watch a standalone Image for its first selected attachment.
 	 */
 	function StandaloneImageDefaultControl( props ) {
-		var previousHasImage = element.useRef( null );
-		var startedWithoutImage = element.useRef( null );
 		var imageState = data.useSelect(
 			function ( select ) {
 				var editorSelect = select( 'core/block-editor' );
@@ -189,46 +191,30 @@
 			props.attributes.id || props.attributes.url
 		);
 
-		if ( startedWithoutImage.current === null ) {
-			startedWithoutImage.current = ! hasImage;
+		/*
+		 * WordPress can remount the Image edit component when an attachment is
+		 * selected. Keep the empty-block marker outside the component so it
+		 * survives that remount, while existing populated Images remain ignored.
+		 */
+		if ( ! imageState.isInGallery && ! hasImage ) {
+			standaloneCandidates[ props.clientId ] = true;
 		}
 
 		element.useEffect(
 			function () {
 				if ( imageState.isInGallery ) {
+					delete standaloneCandidates[ props.clientId ];
 					return;
 				}
 
-				if ( previousHasImage.current === null ) {
-					previousHasImage.current = hasImage;
+				var shouldApply =
+					hasImage &&
+					( standaloneCandidates[ props.clientId ] ||
+						imageState.wasJustInserted ) &&
+					( ! props.attributes.linkDestination ||
+						props.attributes.linkDestination === 'none' );
 
-					if (
-						hasImage &&
-						imageState.wasJustInserted &&
-						( ! props.attributes.linkDestination ||
-							props.attributes.linkDestination === 'none' )
-					) {
-						data.dispatch(
-							'core/block-editor'
-						).updateBlockAttributes(
-							props.clientId,
-							getImageLinkAttributes(
-								props.attributes,
-								'media'
-							)
-						);
-						startedWithoutImage.current = false;
-					}
-
-					return;
-				}
-
-				var gainedImage =
-					! previousHasImage.current && hasImage;
-
-				previousHasImage.current = hasImage;
-
-				if ( gainedImage && startedWithoutImage.current ) {
+				if ( shouldApply ) {
 					data.dispatch(
 						'core/block-editor'
 					).updateBlockAttributes(
@@ -238,7 +224,7 @@
 							'media'
 						)
 					);
-					startedWithoutImage.current = false;
+					delete standaloneCandidates[ props.clientId ];
 				}
 			},
 			[
