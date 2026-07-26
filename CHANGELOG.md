@@ -16,3 +16,4 @@ All notable changes to this project will be documented in this file.
 - One-time content backups, revision capture, rollback, and backup cleanup.
 - Atomic Gallery and Image updates for a coherent editor undo history.
 - Tag-based release packaging with synchronized plugin versions.
+- Detection of WordPress's automatic `none` link state when a Gallery is populated.

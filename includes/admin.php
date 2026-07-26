@@ -176,7 +176,7 @@ function gltm_render_admin_page() {
 
 		<div class="card" style="max-width:960px;">
 			<h2><?php esc_html_e( 'Conversion policy', 'gallery-link-to-media' ); ?></h2>
-			<p><?php esc_html_e( 'Only Gallery blocks whose Gallery-level link destination is unset are converted. Explicit Attachment Page, Media File, Enlarge on Click, and None choices are preserved.', 'gallery-link-to-media' ); ?></p>
+			<p><?php esc_html_e( 'Gallery blocks whose Gallery-level link destination is unset or None are converted. Explicit Attachment Page, Media File, and Enlarge on Click choices are preserved.', 'gallery-link-to-media' ); ?></p>
 			<p><?php esc_html_e( 'Run a dry run and back up the database before converting. Each changed post also receives a one-time content backup for rollback.', 'gallery-link-to-media' ); ?></p>
 		</div>
 	</div>
@@ -382,7 +382,9 @@ function gltm_convert_content( $content ) {
  */
 function gltm_convert_blocks( $blocks, &$result ) {
 	foreach ( $blocks as &$block ) {
-		if ( 'core/gallery' === $block['blockName'] && ! isset( $block['attrs']['linkTo'] ) ) {
+		$link_to = isset( $block['attrs']['linkTo'] ) ? $block['attrs']['linkTo'] : '';
+
+		if ( 'core/gallery' === $block['blockName'] && ( '' === $link_to || 'none' === $link_to ) ) {
 			$converted_images = 0;
 
 			foreach ( $block['innerBlocks'] as &$image ) {

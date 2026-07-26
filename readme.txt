@@ -17,7 +17,7 @@ Gallery Link to Media helps editors who use lightboxes or otherwise need native 
 The plugin is designed to:
 
 * Apply Media File links when images are first added to a new native Gallery block.
-* Preserve explicit editor choices such as Attachment Page, Enlarge on Click, or None.
+* Preserve explicit editor choices such as Attachment Page or Enlarge on Click.
 * Handle Image-to-Gallery block transformations.
 * Scan and update existing Gallery blocks with dry-run, backup, rollback, and cleanup tools.
 * Store only standard WordPress `core/gallery` and `core/image` content, so galleries continue working after deactivation or uninstall.
@@ -47,11 +47,10 @@ Existing gallery content is preserved. The plugin writes standard WordPress bloc
 
 = Will it override a link option selected by an editor? =
 
-No. Automatic behavior applies only when the Gallery has no explicit link destination.
+No. Once a Gallery uses Media File, Attachment Page, or Enlarge on Click, the plugin leaves that choice alone. WordPress automatically writes None when images are first added; the plugin replaces that initial unlinked state with Media File.
 
 == Changelog ==
 
 = 0.1.0 =
 
 * Initial development release.
-

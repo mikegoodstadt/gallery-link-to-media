@@ -76,6 +76,7 @@
 		function ( BlockEdit ) {
 			function GalleryMediaDefaultControl( props ) {
 				var previousImageCount = element.useRef( null );
+				var startedEmptyWithoutLink = element.useRef( null );
 				var galleryState = data.useSelect(
 					function ( select ) {
 						var editorSelect = select( 'core/block-editor' );
@@ -91,13 +92,20 @@
 								: [],
 							wasJustInserted:
 								editorSelect.wasBlockJustInserted(
-									props.clientId
+									props.clientId,
+									'inserter_menu'
 								)
 						};
 					},
 					[ props.clientId ]
 				);
 				var innerImages = galleryState.innerImages;
+
+				if ( startedEmptyWithoutLink.current === null ) {
+					startedEmptyWithoutLink.current =
+						innerImages.length === 0 &&
+						! props.attributes.linkTo;
+				}
 
 				element.useEffect(
 					function () {
@@ -107,12 +115,14 @@
 							if (
 								innerImages.length > 0 &&
 								galleryState.wasJustInserted &&
-								! props.attributes.linkTo
+								( ! props.attributes.linkTo ||
+									props.attributes.linkTo === 'none' )
 							) {
 								setGalleryImagesToMedia(
 									props.clientId,
 									innerImages
 								);
+								startedEmptyWithoutLink.current = false;
 							}
 
 							return;
@@ -126,12 +136,13 @@
 
 						if (
 							gainedFirstImages &&
-							! props.attributes.linkTo
+							startedEmptyWithoutLink.current
 						) {
 							setGalleryImagesToMedia(
 								props.clientId,
 								innerImages
 							);
+							startedEmptyWithoutLink.current = false;
 						}
 					},
 					[

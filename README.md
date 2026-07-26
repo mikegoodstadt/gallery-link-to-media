@@ -7,7 +7,7 @@ The plugin stores standard `core/gallery` and `core/image` attributes and markup
 ## Scope
 
 - Apply media-file links when images are first added to a Gallery with no explicit link choice.
-- Preserve explicit Gallery link choices.
+- Preserve existing Media File, Attachment Page, and Enlarge on Click choices.
 - Handle Image-to-Gallery transformations.
 - Scan, dry-run, convert, back up, roll back, and clean up existing Gallery blocks from **Tools → Gallery Link to Media**.
 - Package installable release ZIP files from version tags.
